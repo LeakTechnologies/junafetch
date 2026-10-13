@@ -115,6 +115,7 @@ option(ENABLE_ASAN "Build fastfetch with ASAN (address sanitizer)" OFF)
 option(ENABLE_TRACER "Build fastfetch with function tracing" OFF)
 option(ENABLE_LTO "Enable link-time optimization in release mode if supported" ON)
 option(BUILD_FLASHFETCH "Build flashfetch" ON) # Also build the flashfetch binary
+option(JUNA_LEAN_WINDOWS "Omit optional video-codec detection from the Juna bundled detector" OFF)
 option(BUILD_TESTS "Build tests" OFF) # Also create test executables
 option(SET_TWEAK "Add tweak to project version" ON) # This is set to off by github actions for release builds
 option(IS_MUSL "Build with musl libc" OFF) # Used by Github Actions
@@ -1407,6 +1408,11 @@ elseif(GNU)
         src/detection/wmtheme/wmtheme_linux.c
         src/detection/camera/camera_nosupport.c
    )
+endif()
+
+if(WIN32 AND JUNA_LEAN_WINDOWS)
+    list(REMOVE_ITEM LIBFASTFETCH_SRC src/detection/codec/codec_windows.cpp)
+    list(APPEND LIBFASTFETCH_SRC src/detection/codec/codec_juna_disabled.c)
 endif()
 
 if(ENABLE_TRACER)
